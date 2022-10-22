@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
-class RegisterController extends BaseController
+class AuthController extends BaseController
 {
     /**
      * Register api
