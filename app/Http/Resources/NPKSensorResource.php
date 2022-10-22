@@ -22,8 +22,8 @@ class NPKSensorResource extends JsonResource
             'phosphorus' => $this->phosphorus,
             'potassium' => $this->potassium,
             'batch' => $this->batch,
-            'created_at' => $this->created_at->timezone(env('APP_TIMEZONE'))->format('Y-m-d H:00:00'),
-            // 'updated_at' => $this->updated_at->timezone(env('APP_TIMEZONE'))->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->timezone(env('APP_TIMEZONE', 'Asia/Manila'))->format('Y-m-d H:00:00'),
+            // 'updated_at' => $this->updated_at->timezone(env('APP_TIMEZONE', 'Asia/Manila'))->format('Y-m-d H:i:s'),
         ];
     }
 }
