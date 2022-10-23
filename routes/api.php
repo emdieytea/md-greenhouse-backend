@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DHT11SensorController;
 use App\Http\Controllers\API\NPKSensorController;
 use App\Http\Controllers\API\SGP30SensorController;
@@ -37,8 +38,14 @@ use App\Http\Controllers\API\UploadDataController;
 */
 
 Route::prefix('v1')->group(function () {
-    Route::resource('dht11sensor', DHT11SensorController::class)->only([ 'index' ]);
-    Route::resource('npksensor', NPKSensorController::class)->only([ 'index' ]);
-    Route::resource('sgp30sensor', SGP30SensorController::class)->only([ 'index' ]);
+    // Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::resource('dht11sensor', DHT11SensorController::class)->only([ 'index' ]);
+        Route::resource('npksensor', NPKSensorController::class)->only([ 'index' ]);
+        Route::resource('sgp30sensor', SGP30SensorController::class)->only([ 'index' ]);
+    });
+
     Route::resource('upload-data', UploadDataController::class)->only([ 'store' ]);
 });

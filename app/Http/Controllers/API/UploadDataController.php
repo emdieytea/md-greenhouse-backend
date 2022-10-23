@@ -41,9 +41,9 @@ class UploadDataController extends BaseController
     public function store(Request $request)
     {
         $input = $request->all();
-        $dht11_datas = $input['dht11_datas']; // datas of dht11 sensor
-        $npk_datas = $input['npk_datas']; // datas of npk sensor
-        $sgp30_datas = $input['sgp30_datas']; // datas of sgp30 sensor
+        $dht11_datas = $input['dht11_datas'] ?? []; // datas of dht11 sensor
+        $npk_datas = $input['npk_datas'] ?? []; // datas of npk sensor
+        $sgp30_datas = $input['sgp30_datas'] ?? []; // datas of sgp30 sensor
         
         try {
             DB::beginTransaction();
