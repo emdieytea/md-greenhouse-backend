@@ -19,12 +19,13 @@ class AuthController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'username' => 'required',
             'email' => 'required|email',
             'password' => 'required',
             'c_password' => 'required|same:password',
         ]);
    
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());       
         }
    
@@ -44,14 +45,20 @@ class AuthController extends BaseController
      */
     public function login(Request $request)
     {
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
+        $username = $request->username;
+
+        $inputs = [
+            (filter_var($username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username') => $username,
+            'password' => $request->password,
+        ];
+
+        if (Auth::attempt($inputs)) { 
             $user = Auth::user(); 
             $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
             $success['name'] =  $user->name;
    
             return $this->sendResponse($success, 'User login successfully.');
-        } 
-        else{ 
+        } else { 
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         } 
     }
