@@ -40,6 +40,8 @@ use App\Http\Controllers\API\UploadDataController;
 Route::prefix('v1')->group(function () {
     // Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('forgot-password', [AuthController::class, 'forgot_password']);
+    Route::post('reset-password', [AuthController::class, 'reset_password']);
 
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::resource('dht11sensor', DHT11SensorController::class)->only([ 'index' ]);
