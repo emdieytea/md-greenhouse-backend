@@ -8,7 +8,7 @@ use App\Models\SGP30Sensor;
 use App\Models\NPKSensor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class UploadDataController extends BaseController
 {

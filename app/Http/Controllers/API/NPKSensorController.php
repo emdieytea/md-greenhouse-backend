@@ -7,7 +7,7 @@ use App\Http\Resources\NPKSensorResource;
 use App\Models\NPKSensor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class NPKSensorController extends BaseController
 {

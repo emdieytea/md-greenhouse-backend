@@ -64,6 +64,26 @@ class AuthController extends BaseController
             return $this->sendError('Unauthorised.', ['error' => 'Login Failed']);
         } 
     }
+    
+    /**
+     * Logout api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        try {
+            // // Revoke all tokens...
+            // $request->user()->tokens()->delete();
+
+            // Revoke the token that was used to authenticate the current request...
+            $request->user()->currentAccessToken()->delete();
+
+            return $this->sendResponse([], 'Logout successfully.');
+        } catch (Exception $e) {
+            return $this->sendError('Error.', 'Something went wrong, please try again.', 400);
+        }
+    }
 
     /**
      * Forgot Password api
@@ -101,6 +121,11 @@ class AuthController extends BaseController
         }
     }
     
+    /**
+     * Reset Password api
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function reset_password(Request $request)
     {
         $input = $request->only('email', 'token', 'password', 'password_confirmation');

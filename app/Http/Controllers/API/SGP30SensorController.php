@@ -7,7 +7,7 @@ use App\Http\Resources\SGP30SensorResource;
 use App\Models\SGP30Sensor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class SGP30SensorController extends BaseController
 {

@@ -7,7 +7,7 @@ use App\Http\Resources\DHT11SensorResource;
 use App\Models\DHT11Sensor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class DHT11SensorController extends BaseController
 {
@@ -73,7 +73,7 @@ class DHT11SensorController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, DHT11Sensor $data)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -84,7 +84,7 @@ class DHT11SensorController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DHT11Sensor $data)
+    public function destroy($id)
     {
         //
     }
