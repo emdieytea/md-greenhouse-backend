@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
         Route::resource('dht11sensor', DHT11SensorController::class)->only([ 'index' ]);
         Route::resource('npksensor', NPKSensorController::class)->only([ 'index' ]);
         Route::resource('sgp30sensor', SGP30SensorController::class)->only([ 'index' ]);
-        Route::resource('node', NodeController::class); //->only([ 'index' ]);
+        Route::resource('nodes', NodeController::class)->except([ 'create', 'edit' ]);
     });
 
     Route::resource('upload-data', UploadDataController::class)->only([ 'store' ]);
