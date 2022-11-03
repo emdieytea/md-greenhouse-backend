@@ -15,20 +15,36 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    // 'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => [
+        'sanctum/csrf-cookie',
+        'api/v1/login',
+        'api/v1/forgot-password',
+        'api/v1/reset-password',
+        'api/v1/logout',
+        'api/v1/dht11sensor',
+        'api/v1/npksensor',
+        'api/v1/sgp30sensor',
+        'api/v1/nodes',
+        'api/v1/upload-data'
+    ],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'emdieytea.com',
+        '*.emdieytea.com',
+        'localhost:3000'
+    ],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Accept', 'Authorization', 'Content-Type'],
 
     'exposed_headers' => [],
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
