@@ -46,7 +46,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('check-session', [AuthController::class, 'check_session']);
+        Route::get('check-session', [AuthController::class, 'check_session']);
 
         Route::resource('dht11sensor', DHT11SensorController::class)->only([ 'index' ]);
         Route::resource('npksensor', NPKSensorController::class)->only([ 'index' ]);
