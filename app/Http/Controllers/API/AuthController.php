@@ -84,6 +84,16 @@ class AuthController extends BaseController
             return $this->sendError('Error.', 'Something went wrong, please try again.', 400);
         }
     }
+    
+    /**
+     * Check Session api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function check_session()
+    {
+        return $this->sendResponse([], 'Authenticated.');
+    }
 
     /**
      * Forgot Password api
