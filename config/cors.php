@@ -31,11 +31,7 @@ return [
 
     'allowed_methods' => ['GET, POST, PUT, DELETE'],
 
-    'allowed_origins' => [
-        'emdieytea.com',
-        '*.emdieytea.com',
-        'localhost:3000'
-    ],
+    'allowed_origins' => ['localhost:3000'],
 
     'allowed_origins_patterns' => [],
 
