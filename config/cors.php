@@ -29,7 +29,7 @@ return [
         'api/v1/upload-data'
     ],
 
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE'],
+    'allowed_methods' => ['GET, POST, PUT, DELETE'],
 
     'allowed_origins' => [
         'emdieytea.com',
@@ -39,7 +39,7 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Accept', 'Authorization', 'Content-Type'],
+    'allowed_headers' => ['Accept, Authorization, Content-Type'],
 
     'exposed_headers' => [],
 
