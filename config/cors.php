@@ -33,7 +33,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:3000',
-        'http://localhost:3000/#/*',
+        'http://localhost:3000/#/dashboard',
         'https://emdieytea.com',
         'https://*.emdieytea.com'
     ],
