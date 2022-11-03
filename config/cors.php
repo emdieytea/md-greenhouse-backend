@@ -22,6 +22,7 @@ return [
         'api/v1/forgot-password',
         'api/v1/reset-password',
         'api/v1/logout',
+        'api/v1/check-session',
         'api/v1/dht11sensor',
         'api/v1/npksensor',
         'api/v1/sgp30sensor',
@@ -33,7 +34,6 @@ return [
 
     'allowed_origins' => [
         'http://localhost:3000',
-        'http://localhost:3000/#/dashboard',
         'https://emdieytea.com',
         'https://*.emdieytea.com'
     ],
