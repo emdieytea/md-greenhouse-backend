@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\Http\Resources\NPKSensorResource;
+// use App\Http\Resources\NPKSensorResource;
 use App\Models\NPKSensor;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class NPKSensorController extends BaseController
 {
@@ -18,9 +17,53 @@ class NPKSensorController extends BaseController
      */
     public function index()
     {
-        $datas = NPKSensor::all();
-    
-        return $this->sendResponse(NPKSensorResource::collection($datas), 'Datas retrieved successfully.');
+        $batches = NPKSensor::select(['batch'])->groupBy('batch')->orderBy('batch', 'asc')->pluck('batch')->toArray();
+        
+        if (count($batches) <= 0) {
+            return $this->sendError('Error.', 'No Data Found.', 404);
+        }
+        
+        $labelDates = NPKSensor::select(
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') AS created_at")
+            )
+            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')"))
+            ->orderBy('created_at', 'asc')
+            ->pluck('created_at')
+            ->toArray();
+
+        $arr = [];
+        
+        $arr['labels'] = $labelDates;
+
+        foreach ($batches as $batch) {
+            $arr['batch' . $batch] = [];
+            
+            $datas = NPKSensor::where('batch', $batch)->orderBy('created_at', 'asc')->get();
+            
+            foreach ($labelDates as $date) {
+                foreach ($datas as $i => $data) {
+                    $isFound = false;
+                    if ($date->format('Y-m-d H:00:00') == $data->created_at->format('Y-m-d H:00:00')) {
+                        $arr['batch' . $batch][0][] = $data->nitrogen;
+                        $arr['batch' . $batch][1][] = $data->phosphorus;
+                        $arr['batch' . $batch][2][] = $data->potassium;
+                        $i++;
+                        $isFound = true;
+                        break;
+                    }
+                }
+
+                if (!$isFound) {
+                    $arr['batch' . $batch][0][] = 0;
+                    $arr['batch' . $batch][1][] = 0;
+                    $arr['batch' . $batch][2][] = 0;
+                }
+            }
+
+        }
+
+        // return $this->sendResponse(NPKSensorResource::collection($datas), 'Datas retrieved successfully.');
+        return $this->sendResponse($arr, 'Datas retrieved successfully.');
     }
     
     /**

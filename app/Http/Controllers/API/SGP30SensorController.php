@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\Http\Resources\SGP30SensorResource;
+// use App\Http\Resources\SGP30SensorResource;
 use App\Models\SGP30Sensor;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class SGP30SensorController extends BaseController
 {
@@ -18,9 +17,51 @@ class SGP30SensorController extends BaseController
      */
     public function index()
     {
-        $datas = SGP30Sensor::all();
-    
-        return $this->sendResponse(SGP30SensorResource::collection($datas), 'Datas retrieved successfully.');
+        $batches = SGP30Sensor::select(['batch'])->groupBy('batch')->orderBy('batch', 'asc')->pluck('batch')->toArray();
+        
+        if (count($batches) <= 0) {
+            return $this->sendError('Error.', 'No Data Found.', 404);
+        }
+        
+        $labelDates = SGP30Sensor::select(
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') AS created_at")
+            )
+            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')"))
+            ->orderBy('created_at', 'asc')
+            ->pluck('created_at')
+            ->toArray();
+
+        $arr = [];
+        
+        $arr['labels'] = $labelDates;
+
+        foreach ($batches as $batch) {
+            $arr['batch' . $batch] = [];
+            
+            $datas = SGP30Sensor::where('batch', $batch)->orderBy('created_at', 'asc')->get();
+            
+            foreach ($labelDates as $date) {
+                foreach ($datas as $i => $data) {
+                    $isFound = false;
+                    if ($date->format('Y-m-d H:00:00') == $data->created_at->format('Y-m-d H:00:00')) {
+                        $arr['batch' . $batch][0][] = $data->co2;
+                        $arr['batch' . $batch][1][] = $data->tvoc;
+                        $i++;
+                        $isFound = true;
+                        break;
+                    }
+                }
+
+                if (!$isFound) {
+                    $arr['batch' . $batch][0][] = 0;
+                    $arr['batch' . $batch][1][] = 0;
+                }
+            }
+
+        }
+
+        // return $this->sendResponse(SGP30SensorResource::collection($datas), 'Datas retrieved successfully.');
+        return $this->sendResponse($arr, 'Datas retrieved successfully.');
     }
     
     /**
