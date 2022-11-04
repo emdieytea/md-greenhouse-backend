@@ -66,6 +66,54 @@ class AuthController extends BaseController
     }
     
     /**
+     * Get Profile api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function get_profile(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            return $this->sendResponse([
+                'name' => $user->name,
+                'username' => $user->username,
+                'email' => $user->email,
+            ], 'Logout successfully.');
+        } catch (Exception $e) {
+            return $this->sendError('Error.', 'Something went wrong, please try again.', 400);
+        }
+    }
+
+    /**
+     * Post Profile api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function post_profile(Request $request)
+    {
+        $input = $request->only('name', 'password');
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'password' => 'nullable|min:8',
+        ]);
+        
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+        
+        $user = $request->user();
+        $user->name =  $input['name'];
+        if ($request->filled('password')) {
+            $user->password = Hash::make($input['password']);
+        }
+        $user->save();
+        
+        return $this->sendResponse([], 'Profile updated successfully.');
+    }
+
+    /**
      * Logout api
      *
      * @return \Illuminate\Http\Response

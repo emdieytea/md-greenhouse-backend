@@ -45,6 +45,9 @@ Route::prefix('v1')->group(function () {
     Route::post('reset-password', [AuthController::class, 'reset_password']);
 
     Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('profile', [AuthController::class, 'get_profile']);
+        Route::post('profile', [AuthController::class, 'post_profile']);
+
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('check-session', [AuthController::class, 'check_session']);
 
