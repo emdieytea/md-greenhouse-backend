@@ -21,6 +21,7 @@ return [
         'api/v1/login',
         'api/v1/forgot-password',
         'api/v1/reset-password',
+        'api/v1/profile',
         'api/v1/logout',
         'api/v1/check-session',
         'api/v1/dht11sensor',
