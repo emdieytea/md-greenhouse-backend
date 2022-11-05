@@ -79,7 +79,7 @@ class AuthController extends BaseController
                 'name' => $user->name,
                 'username' => $user->username,
                 'email' => $user->email,
-            ], 'Logout successfully.');
+            ], 'Profile information retrieved successfully.');
         } catch (Exception $e) {
             return $this->sendError('Error.', 'Something went wrong, please try again.', 400);
         }
