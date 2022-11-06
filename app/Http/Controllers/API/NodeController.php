@@ -132,7 +132,7 @@ class NodeController extends BaseController
      */
     public function destroy($id)
     {
-        $data = DHT11Sensor::find($id);
+        $data = Node::find($id);
         
         if (is_null($data)) {
             return $this->sendError('Data not found.');
