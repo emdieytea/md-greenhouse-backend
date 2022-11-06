@@ -28,6 +28,7 @@ return [
         'api/v1/npksensor',
         'api/v1/sgp30sensor',
         'api/v1/nodes',
+        'api/v1/nodes/*',
         'api/v1/upload-data'
     ],
 
