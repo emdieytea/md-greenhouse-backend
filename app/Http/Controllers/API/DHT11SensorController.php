@@ -36,6 +36,10 @@ class DHT11SensorController extends BaseController
 
         $arr['labels'] = $labelDates;
 
+        foreach($arr['labels'] as $key => $value) {
+            $arr['labels'][$key] = $value->format('Y-m-d H:00');
+        }
+
         foreach ($batches as $batch) {
             $arr['batch' . $batch] = [];
             
