@@ -5,8 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 // use App\Http\Resources\NPKSensorResource;
 use App\Models\NPKSensor;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class NPKSensorController extends BaseController
 {
@@ -15,59 +16,86 @@ class NPKSensorController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $batches = NPKSensor::select(['batch'])->groupBy('batch')->orderBy('batch', 'asc')->pluck('batch')->toArray();
-        
-        if (count($batches) <= 0) {
-            return $this->sendError('Error.', 'No Data Found.', 404);
-        }
-        
-        $labelDates = NPKSensor::select(
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') AS created_at")
-            )
-            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')"))
-            ->orderBy('created_at', 'asc')
-            ->pluck('created_at')
-            ->toArray();
+        try {
+            $inputs = $request->only('start_date', 'end_date');
 
-        $arr = [];
-        
-        $arr['labels'] = $labelDates;
-        
-        foreach($arr['labels'] as $key => $value) {
-            $arr['labels'][$key] = $value->format('Y-m-d H:00');
-        }
-
-        foreach ($batches as $batch) {
-            $arr['batch' . $batch] = [];
-            
-            $datas = NPKSensor::where('batch', $batch)->orderBy('created_at', 'asc')->get();
-            
-            foreach ($labelDates as $date) {
-                foreach ($datas as $i => $data) {
-                    $isFound = false;
-                    if ($date->format('Y-m-d H:00:00') == $data->created_at->format('Y-m-d H:00:00')) {
-                        $arr['batch' . $batch][0][] = $data->nitrogen;
-                        $arr['batch' . $batch][1][] = $data->phosphorus;
-                        $arr['batch' . $batch][2][] = $data->potassium;
-                        $i++;
-                        $isFound = true;
-                        break;
-                    }
-                }
-
-                if (!$isFound) {
-                    $arr['batch' . $batch][0][] = 0;
-                    $arr['batch' . $batch][1][] = 0;
-                    $arr['batch' . $batch][2][] = 0;
-                }
+            if ((Str::of($inputs['start_date'])->isEmpty() && Str::of($inputs['end_date'])->isNotEmpty()) || (Str::of($inputs['start_date'])->isNotEmpty() && Str::of($inputs['end_date'])->isEmpty())) {
+                return $this->sendError('Error.', 'Start and End date should be empty or has both value.', 400);
             }
 
-        }
+            if (Str::of($inputs['start_date'])->isEmpty()) {
+                $inputs['start_date'] = Carbon::now()->startOfMonth();
+            } else {
+                $inputs['start_date'] = Carbon::parse($inputs['start_date']);
+            }
 
-        // return $this->sendResponse(NPKSensorResource::collection($datas), 'Datas retrieved successfully.');
-        return $this->sendResponse($arr, 'Datas retrieved successfully.');
+            if (Str::of($inputs['end_date'])->isEmpty()) {
+                $inputs['end_date'] = Carbon::now()->endOfMonth();
+            } else {
+                $inputs['end_date'] = Carbon::parse($inputs['end_date']);
+            }
+
+            $batches = NPKSensor::select(['batch'])->groupBy('batch')->orderBy('batch', 'asc')->pluck('batch')->toArray();
+
+            // if (count($batches) <= 0) {
+            //     return $this->sendError('Error.', 'No Data Found.', 404);
+            // }
+            
+            // $labelDates = NPKSensor::select(
+            //         DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') AS created_at")
+            //     )
+            //     ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')"))
+            //     ->orderBy('created_at', 'asc')
+            //     ->pluck('created_at')
+            //     ->toArray();
+
+            $labelDates = [];
+
+            $start_date = Carbon::parse($inputs['start_date']->format('Y-m-d') . ' 00:00:00');
+            $end_date = Carbon::parse($inputs['end_date']->format('Y-m-d') . ' 23:00:00');
+            
+            while ($start_date <= $end_date) {
+                $labelDates[] = $start_date->format('Y-m-d H:00');
+                $start_date->addHour();
+            }
+
+            $arr = [];
+
+            $arr['labels'] = $labelDates;
+    
+            foreach ($batches as $batch) {
+                $arr['batch' . $batch] = [];
+                
+                $datas = NPKSensor::where('batch', $batch)->orderBy('created_at', 'asc')->get();
+                
+                foreach ($labelDates as $date) {
+                    foreach ($datas as $i => $data) {
+                        $isFound = false;
+                        if (Carbon::parse($date)->format('Y-m-d H:00:00') == $data->created_at->format('Y-m-d H:00:00')) {
+                            $arr['batch' . $batch][0][] = $data->nitrogen;
+                            $arr['batch' . $batch][1][] = $data->phosphorus;
+                            $arr['batch' . $batch][2][] = $data->potassium;
+                            $i++;
+                            $isFound = true;
+                            break;
+                        }
+                    }
+    
+                    if (!$isFound) {
+                        $arr['batch' . $batch][0][] = 0;
+                        $arr['batch' . $batch][1][] = 0;
+                    }
+                }
+    
+            }
+
+            // return $this->sendResponse(NPKSensorResource::collection($datas), 'Datas retrieved successfully.');
+            return $this->sendResponse($arr, 'Datas retrieved successfully.');
+        } catch (\Carbon\Exceptions\InvalidFormatException $e) {
+            return $this->sendError('Error.', 'Invalid Date Format.', 400); // $e->getMessage()
+        }
     }
     
     /**
