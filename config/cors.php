@@ -43,7 +43,7 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Accept, Authorization, Content-Type', 'App-Auth-Key'],
+    'allowed_headers' => ['Accept, withCredentials, Authorization, Content-Type, App-Auth-Key'],
 
     'exposed_headers' => [],
 
