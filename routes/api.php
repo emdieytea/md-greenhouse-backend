@@ -38,7 +38,7 @@ use App\Http\Controllers\API\UploadDataController;
  * DELETE	  |     /photos/{photo}	      |     destroy	   |    photos.destroy
 */
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware(['app_auth_key'])->group(function () {
     // Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot-password', [AuthController::class, 'forgot_password']);
