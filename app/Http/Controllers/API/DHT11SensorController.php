@@ -21,6 +21,13 @@ class DHT11SensorController extends BaseController
         try {
             $inputs = $request->only('start_date', 'end_date');
 
+            // if (Str::of($inputs['start_date'] ?? null)->isEmpty()) {
+            //     return $this->sendError('Error.', 'Start date is missing.', 400);
+            // }
+            // if (Str::of($inputs['end_date'] ?? null)->isEmpty()) {
+            //     return $this->sendError('Error.', 'End date is missing.', 400);
+            // }
+
             if ((Str::of($inputs['start_date'])->isEmpty() && Str::of($inputs['end_date'])->isNotEmpty()) || (Str::of($inputs['start_date'])->isNotEmpty() && Str::of($inputs['end_date'])->isEmpty())) {
                 return $this->sendError('Error.', 'Start and End date should be empty or has both value.', 400);
             }

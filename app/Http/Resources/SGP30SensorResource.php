@@ -21,7 +21,7 @@ class SGP30SensorResource extends JsonResource
             'co2' => $this->co2,
             'tvoc' => $this->tvoc,
             'batch' => $this->batch,
-            'created_at' => $this->created_at->timezone(env('APP_TIMEZONE', 'Asia/Manila'))->format('Y-m-d H:00:00'),
+            'created_at' => $this->created_at->format('Y-m-d H:00:00'),
             // 'updated_at' => $this->updated_at->timezone(env('APP_TIMEZONE', 'Asia/Manila'))->format('Y-m-d H:i:s'),
         ];
     }

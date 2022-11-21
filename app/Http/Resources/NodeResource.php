@@ -21,7 +21,7 @@ class NodeResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'url' => $this->url,
-            'created_at' => $this->created_at->timezone(env('APP_TIMEZONE', 'Asia/Manila'))->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             // 'updated_at' => $this->updated_at->timezone(env('APP_TIMEZONE', 'Asia/Manila'))->format('Y-m-d H:i:s'),
         ];
     }
