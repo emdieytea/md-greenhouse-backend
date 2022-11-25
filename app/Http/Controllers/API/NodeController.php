@@ -69,7 +69,10 @@ class NodeController extends BaseController
         
         $data->batch_no = $input['batch_no'];
         $data->name = $input['name'];
-        $data->description = $input['description'];
+
+        if ($request->filled('description'))
+            $data->description = $input['description'];
+
         $data->status = $input['status'];
         
         if ($request->filled('url'))
