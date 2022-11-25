@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Http\Resources\NodeResource;
 use App\Models\Node;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,22 +44,41 @@ class NodeController extends BaseController
         $input = $request->all();
         
         $validator = Validator::make($input, [
+            'batch_no' => 'required|not_in:0|numeric', // unique:nodes
             'name' => 'required|string',
             // 'description' => 'required',
-            'url' => 'required|url'
+            'status' => 'required',
+            'url' => 'nullable|url'
+        ], [
+            'batch_no.not_in' => "The :attribute should not be equal to 0.",
+        ], [
+            'batch_no' => 'batch #',
         ]);
         
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());       
         }
+
+        $isNew = false;
+        $data = Node::where('batch_no', $input['batch_no'])->first();
+
+        if (!$data) {
+            $data = new Node;
+            $isNew = true;
+        }
         
-        $data = new Node;
+        $data->batch_no = $input['batch_no'];
         $data->name = $input['name'];
         $data->description = $input['description'];
-        $data->url = $input['url'];
+        $data->status = $input['status'];
+        
+        if ($request->filled('url'))
+            $data->url = $input['url'];
+
+        $data->updated_at = Carbon::now();
         $data->save();
     
-        return $this->sendResponse(new NodeResource($data), 'Data created successfully.');
+        return $this->sendResponse(new NodeResource($data), 'Data ' . ($isNew ? 'created' : 'updated') . ' successfully.');
     }
    
     /**
@@ -107,21 +127,17 @@ class NodeController extends BaseController
         $input = $request->all();
    
         $validator = Validator::make($input, [
-            'name' => 'required|string',
-            // 'description' => 'required',
             'url' => 'required|url'
         ]);
    
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());       
         }
    
-        $data->name = $input['name'];
-        $data->description = $input['description'];
         $data->url = $input['url'];
         $data->save();
    
-        return $this->sendResponse(new NodeResource($data), 'Data updated successfully.');
+        return $this->sendResponse(new NodeResource($data), 'Data URL updated successfully.');
     }
    
     /**

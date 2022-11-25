@@ -18,11 +18,13 @@ class NodeResource extends JsonResource
         
         return [
             'id' => $this->id,
+            'batch_no' => $this->batch_no,
             'name' => $this->name,
             'description' => $this->description,
+            'status' => $this->status,
             'url' => $this->url,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            // 'updated_at' => $this->updated_at->timezone(env('APP_TIMEZONE', 'Asia/Manila'))->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }

@@ -22,8 +22,10 @@ class Node extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'batch_no',
         'name',
         'description',
+        'status',
         'url',
         'created_at',
         'updated_at',
