@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,6 +17,20 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        
+        $date = Carbon::now()->format('Y-m-d');
+        
+        // $schedule
+        //     ->command('command:seed_data')
+        //     ->hourly();
+        //     // ->appendOutputTo(storage_path('logs/seed-' . $date . '.log'))
+        //     // ->withoutOverlapping();
+
+        $schedule
+            ->command('command:check_batch_status')
+            ->everyMinute()
+            ->appendOutputTo(storage_path('logs/check-status-' . $date . '.log'))
+            ->withoutOverlapping();
     }
 
     /**
