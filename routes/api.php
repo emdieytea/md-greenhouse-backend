@@ -54,7 +54,7 @@ Route::prefix('v1')->middleware(['app_auth_key'])->group(function () {
         Route::resource('dht11sensor', DHT11SensorController::class)->only([ 'index' ]);
         Route::resource('npksensor', NPKSensorController::class)->only([ 'index' ]);
         Route::resource('sgp30sensor', SGP30SensorController::class)->only([ 'index' ]);
-        Route::resource('nodes', NodeController::class)->only([ 'index' ]);
+        Route::resource('nodes', NodeController::class)->only([ 'index', 'update' ]);
     });
     
     Route::resource('nodes', NodeController::class)->only([ 'store' ]);
