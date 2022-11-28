@@ -52,14 +52,23 @@ class CheckBatchStatusCommand extends Command
 
             if ($nodes->isNotEmpty()) {
                 foreach ($nodes as $key => $node) {
-                    if ($date_now->diffInMinutes($node->updated_at) > 3) {
-                        $node->status = 0;
-                        $node->save();
 
-                        $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . '] Batch # ' . $node->batch_no . ' was checked and deemed offline.');
-                    } else {
-                        $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . '] Batch # ' . $node->batch_no . ' was checked and is still online.');
-                    }
+                    // get the batches from env and convert them to array
+                    $batches = explode(',', env('APP_ACTIVE_BATCHES')); // can be commented / removed if not need to rely on env active batch
+
+                    // loop through the batches if it has array value
+                    foreach ($batches as $batch) { // can be commented / removed if not need to rely on env active batch
+                        if ($batch == $node->batch_no) { // can be commented / removed if not need to rely on env active batch
+                            if ($date_now->diffInMinutes($node->updated_at) > 3) {
+                                $node->status = 0;
+                                $node->save();
+        
+                                $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . '] Batch # ' . $node->batch_no . ' was checked and deemed offline.');
+                            } else {
+                                $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . '] Batch # ' . $node->batch_no . ' was checked and is still online.');
+                            }
+                        } // can be commented / removed if not need to rely on env active batch
+                    } // can be commented / removed if not need to rely on env active batch
                 }
 
                 DB::commit();
