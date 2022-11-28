@@ -1,42 +1,26 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Database\Seeders;
 
 use App\Models\DHT11Sensor;
 use App\Models\SGP30Sensor;
 use App\Models\NPKSensor;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
-class SeedDataCommand extends Command
+class DeviceDataSeeder extends Seeder
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'command:seed_data';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Seeds data for the batches.';
-
+    private $_date_now;
+    private $_start_date;
+    // private $_end_date;
     private $_increment;
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
-        parent::__construct();
-        
+        $this->_date_now  = Carbon::now();
+        $this->_start_date = Carbon::parse('2022-03-01 10:04:01');
+        // $this->_end_date = Carbon::parse('2022-03-02 00:04:33');
         $this->_increment = 1.3; // increment value of the min and max value
     }
 
@@ -45,26 +29,26 @@ class SeedDataCommand extends Command
      * 
      * @return void
      */
-    private function GenDHT11Data($batch)
+    private function GenDHT11Data($date, $batch)
     {
-        $date_now = Carbon::now(); // the date now
+        $the_date = Carbon::parse($date); // the date now
 
         // checks if it has data for this hour using the date now as its start and end date
-        $check = DHT11Sensor::whereDate('created_at', '>=', $date_now->format('Y-m-d'))
-            ->whereTime('created_at', '>=', $date_now->format('H:00:00'))
-            ->whereDate('created_at', '<=', $date_now->format('Y-m-d'))
-            ->whereTime('created_at', '<=', $date_now->format('H:59:59'))
+        $check = DHT11Sensor::whereDate('created_at', '>=', $the_date->format('Y-m-d'))
+            ->whereTime('created_at', '>=', $the_date->format('H:00:00'))
+            ->whereDate('created_at', '<=', $the_date->format('Y-m-d'))
+            ->whereTime('created_at', '<=', $the_date->format('H:59:59'))
             ->where('batch', $batch)
             ->get();
 
-        $date_now->subHour(); // subtract an hour to get the data an hour ago
+        $the_date->subHour(); // subtract an hour to get the data an hour ago
             
         if ($check->isEmpty()) {
             // find a data past hour ago
-            $old_data = DHT11Sensor::whereDate('created_at', '>=', $date_now->format('Y-m-d'))
-                ->whereTime('created_at', '>=', $date_now->format('H:00:00'))
-                ->whereDate('created_at', '<=', $date_now->format('Y-m-d'))
-                ->whereTime('created_at', '<=', $date_now->format('H:59:59'))
+            $old_data = DHT11Sensor::whereDate('created_at', '>=', $the_date->format('Y-m-d'))
+                ->whereTime('created_at', '>=', $the_date->format('H:00:00'))
+                ->whereDate('created_at', '<=', $the_date->format('Y-m-d'))
+                ->whereTime('created_at', '<=', $the_date->format('H:59:59'))
                 ->where('batch', $batch)
                 ->latest('created_at')
                 ->first();
@@ -93,9 +77,14 @@ class SeedDataCommand extends Command
             $data->temperature = $def_temp . '.' . $def_temp_d;
             $data->humidity = $def_humid . '.' . $def_humid_d;
             $data->batch = $batch;
+            $data->created_at = $date;
             $data->updated_at = null;
             $data->save();
+
+            return true;
         }
+
+        return false;
     }
     
     /**
@@ -103,30 +92,30 @@ class SeedDataCommand extends Command
      * 
      * @return void
      */
-    private function GenSGP30Data($batch)
+    private function GenSGP30Data($date, $batch)
     {
-        $date_now = Carbon::now(); // the date now
+        $the_date = Carbon::parse($date); // the date now
 
         // checks if it has data for this hour using the date now as its start and end date
-        $check = SGP30Sensor::whereDate('created_at', '>=', $date_now->format('Y-m-d'))
-            ->whereTime('created_at', '>=', $date_now->format('H:00:00'))
-            ->whereDate('created_at', '<=', $date_now->format('Y-m-d'))
-            ->whereTime('created_at', '<=', $date_now->format('H:59:59'))
+        $check = SGP30Sensor::whereDate('created_at', '>=', $the_date->format('Y-m-d'))
+            ->whereTime('created_at', '>=', $the_date->format('H:00:00'))
+            ->whereDate('created_at', '<=', $the_date->format('Y-m-d'))
+            ->whereTime('created_at', '<=', $the_date->format('H:59:59'))
             ->where('batch', $batch)
             ->get();
 
-        $date_now->subHour(); // subtract an hour to get the data an hour ago
+        $the_date->subHour(); // subtract an hour to get the data an hour ago
             
         if ($check->isEmpty()) {
             // find a data past hour ago
-            $old_data = SGP30Sensor::whereDate('created_at', '>=', $date_now->format('Y-m-d'))
-                ->whereTime('created_at', '>=', $date_now->format('H:00:00'))
-                ->whereDate('created_at', '<=', $date_now->format('Y-m-d'))
-                ->whereTime('created_at', '<=', $date_now->format('H:59:59'))
+            $old_data = SGP30Sensor::whereDate('created_at', '>=', $the_date->format('Y-m-d'))
+                ->whereTime('created_at', '>=', $the_date->format('H:00:00'))
+                ->whereDate('created_at', '<=', $the_date->format('Y-m-d'))
+                ->whereTime('created_at', '<=', $the_date->format('H:59:59'))
                 ->where('batch', $batch)
                 ->latest('created_at')
                 ->first();
-            
+
             $co2_min = 244; $co2_max = 579; // min and max of carbon dioxide
             $def_co2 = rand($co2_min, $co2_max);
             $tvoc_min = 0; $tvoc_max = 287; // min and max of total volatile organic compound
@@ -149,9 +138,14 @@ class SeedDataCommand extends Command
             $data->co2 = $def_co2;
             $data->tvoc = $def_tvoc;
             $data->batch = $batch;
+            $data->created_at = $date;
             $data->updated_at = null;
             $data->save();
+
+            return true;
         }
+
+        return false;
     }
     
     /**
@@ -159,30 +153,30 @@ class SeedDataCommand extends Command
      * 
      * @return void
      */
-    private function GenNPKData($batch)
+    private function GenNPKData($date, $batch)
     {
-        $date_now = Carbon::now(); // the date now
+        $the_date = Carbon::parse($date); // the date now
 
         // checks if it has data for this hour using the date now as its start and end date
-        $check = NPKSensor::whereDate('created_at', '>=', $date_now->format('Y-m-d'))
-            ->whereTime('created_at', '>=', $date_now->format('H:00:00'))
-            ->whereDate('created_at', '<=', $date_now->format('Y-m-d'))
-            ->whereTime('created_at', '<=', $date_now->format('H:59:59'))
+        $check = NPKSensor::whereDate('created_at', '>=', $the_date->format('Y-m-d'))
+            ->whereTime('created_at', '>=', $the_date->format('H:00:00'))
+            ->whereDate('created_at', '<=', $the_date->format('Y-m-d'))
+            ->whereTime('created_at', '<=', $the_date->format('H:59:59'))
             ->where('batch', $batch)
             ->get();
 
-        $date_now->subHour(); // subtract an hour to get the data an hour ago
+        $the_date->subHour(); // subtract an hour to get the data an hour ago
             
         if ($check->isEmpty()) {
             // find a data past hour ago
-            $old_data = NPKSensor::whereDate('created_at', '>=', $date_now->format('Y-m-d'))
-                ->whereTime('created_at', '>=', $date_now->format('H:00:00'))
-                ->whereDate('created_at', '<=', $date_now->format('Y-m-d'))
-                ->whereTime('created_at', '<=', $date_now->format('H:59:59'))
+            $old_data = NPKSensor::whereDate('created_at', '>=', $the_date->format('Y-m-d'))
+                ->whereTime('created_at', '>=', $the_date->format('H:00:00'))
+                ->whereDate('created_at', '<=', $the_date->format('Y-m-d'))
+                ->whereTime('created_at', '<=', $the_date->format('H:59:59'))
                 ->where('batch', $batch)
                 ->latest('created_at')
                 ->first();
-
+            
             $n_min = 0; $n_max = 255; // min and max of nitrogen
             $def_n = rand($n_min, $n_max);
             $def_n_d = rand(0, 99); // min and max decimal of nitrogen
@@ -215,41 +209,52 @@ class SeedDataCommand extends Command
             $data->phosphorus = $def_p . '.' . $def_p_d;
             $data->potassium = $def_k . '.' . $def_k_d;
             $data->batch = $batch;
+            $data->created_at = $date;
             $data->updated_at = null;
             $data->save();
+
+            return true;
         }
+
+        return false;
     }
 
     /**
-     * Execute the console command.
+     * Run the database seeds.
      *
-     * @return int
+     * @return void
      */
-    public function handle()
+    public function run()
     {
-        $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . '] Executing seeding of data to batches!');
+        // counters
+        $dht11_counter = 0;
+        $sgp30_counter = 0;
+        $npk_counter = 0;
 
-        try {
-            DB::beginTransaction();
-            
+        while ($this->_start_date->timestamp < $this->_date_now->timestamp) {
             $batches = explode(',', env('APP_ACTIVE_BATCHES')); // get the batches from env and convert them to array
             shuffle($batches); // shuffle the array batch
 
             // loop through the batches if it has array value
             foreach ($batches as $batch) {
-                $this->GenDHT11Data($batch);
-                $this->GenSGP30Data($batch);
-                $this->GenNPKData($batch);
+                $dht11 = $this->GenDHT11Data($this->_start_date, $batch);
+                if ($dht11) $dht11_counter++;
+                $sgp30 = $this->GenSGP30Data($this->_start_date, $batch);
+                if ($sgp30) $sgp30_counter++;
+                $npk = $this->GenNPKData($this->_start_date, $batch);
+                if ($npk) $npk_counter++;
             }
-            
-            DB::commit();
 
-            $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . '] Seeding of data to batches completed!');
-            return 200;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            $this->error('[' . Carbon::now()->format('Y-m-d H:i:s') . '] Something went wrong please try again!'); // $e->getMessage()
-            return 400;
+            $this->_start_date->addHour();
         }
+        
+        $elapsed_time = Carbon::now()->diffInSeconds($this->_date_now);
+
+        // format the numbers to add thousand separator (,)
+        $dht11_counter = number_format($dht11_counter);
+        $sgp30_counter = number_format($sgp30_counter);
+        $npk_counter = number_format($npk_counter);
+
+        echo "$dht11_counter records are inserted for dht11_sensors table.\n$sgp30_counter records are inserted for sgp30_sensors table.\n$npk_counter records are inserted for npk_sensors table.\nElapsed Time: " . intval($elapsed_time / 60) . " minute(s) " . ($elapsed_time % 60) . " second(s)\n";
     }
 }
