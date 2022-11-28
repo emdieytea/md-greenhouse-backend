@@ -69,25 +69,23 @@ class SGP30SensorController extends BaseController
                 $arr['batch' . $batch] = [];
                 
                 $datas = SGP30Sensor::where('batch', $batch)->orderBy('created_at', 'asc')->get();
+
+                $datas->each(function ($item) {
+                    $item->created_at = $item->created_at->format('Y-m-d H:00:00');
+                });
+
+                $co2_data = $datas->pluck('co2', 'created_at')->toArray();
+                $tvoc_data = $datas->pluck('tvoc', 'created_at')->toArray();
                 
                 foreach ($labelDates as $date) {
-                    foreach ($datas as $i => $data) {
-                        $isFound = false;
-                        if (Carbon::parse($date)->format('Y-m-d H:00:00') == $data->created_at->format('Y-m-d H:00:00')) {
-                            $arr['batch' . $batch][0][] = $data->co2;
-                            $arr['batch' . $batch][1][] = $data->tvoc;
-                            $i++;
-                            $isFound = true;
-                            break;
-                        }
-                    }
-    
-                    if (!$isFound) {
+                    if ($co2_data[$date . ':00'] ?? null && $tvoc_data[$date . ':00'] ?? null) {
+                        $arr['batch' . $batch][0][] = $co2_data[$date . ':00'];
+                        $arr['batch' . $batch][1][] = $tvoc_data[$date . ':00'];
+                    } else {
                         $arr['batch' . $batch][0][] = 0;
                         $arr['batch' . $batch][1][] = 0;
                     }
                 }
-    
             }
 
             // return $this->sendResponse(SGP30SensorResource::collection($datas), 'Datas retrieved successfully.');

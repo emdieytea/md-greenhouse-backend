@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
-// use App\Http\Resources\DHT11SensorResource;
+use App\Http\Resources\DHT11SensorResource;
 use App\Models\DHT11Sensor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DHT11SensorController extends BaseController
@@ -76,25 +77,23 @@ class DHT11SensorController extends BaseController
                 $arr['batch' . $batch] = [];
                 
                 $datas = DHT11Sensor::where('batch', $batch)->orderBy('created_at', 'asc')->get();
+
+                $datas->each(function ($item) {
+                    $item->created_at = $item->created_at->format('Y-m-d H:00:00');
+                });
+
+                $temp_data = $datas->pluck('temperature', 'created_at')->toArray();
+                $humid_data = $datas->pluck('humidity', 'created_at')->toArray();
                 
                 foreach ($labelDates as $date) {
-                    foreach ($datas as $i => $data) {
-                        $isFound = false;
-                        if (Carbon::parse($date)->format('Y-m-d H:00:00') == $data->created_at->format('Y-m-d H:00:00')) {
-                            $arr['batch' . $batch][0][] = $data->temperature;
-                            $arr['batch' . $batch][1][] = $data->humidity;
-                            $i++;
-                            $isFound = true;
-                            break;
-                        }
-                    }
-    
-                    if (!$isFound) {
+                    if ($temp_data[$date . ':00'] ?? null && $humid_data[$date . ':00'] ?? null) {
+                        $arr['batch' . $batch][0][] = $temp_data[$date . ':00'];
+                        $arr['batch' . $batch][1][] = $humid_data[$date . ':00'];
+                    } else {
                         $arr['batch' . $batch][0][] = 0;
                         $arr['batch' . $batch][1][] = 0;
                     }
                 }
-    
             }
 
             // return $this->sendResponse(DHT11SensorResource::collection($datas), 'Datas retrieved successfully.');

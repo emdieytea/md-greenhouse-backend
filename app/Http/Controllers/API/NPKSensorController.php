@@ -69,26 +69,26 @@ class NPKSensorController extends BaseController
                 $arr['batch' . $batch] = [];
                 
                 $datas = NPKSensor::where('batch', $batch)->orderBy('created_at', 'asc')->get();
+
+                $datas->each(function ($item) {
+                    $item->created_at = $item->created_at->format('Y-m-d H:00:00');
+                });
+
+                $n_data = $datas->pluck('nitrogen', 'created_at')->toArray();
+                $p_data = $datas->pluck('phosphorus', 'created_at')->toArray();
+                $k_data = $datas->pluck('potassium', 'created_at')->toArray();
                 
                 foreach ($labelDates as $date) {
-                    foreach ($datas as $i => $data) {
-                        $isFound = false;
-                        if (Carbon::parse($date)->format('Y-m-d H:00:00') == $data->created_at->format('Y-m-d H:00:00')) {
-                            $arr['batch' . $batch][0][] = $data->nitrogen;
-                            $arr['batch' . $batch][1][] = $data->phosphorus;
-                            $arr['batch' . $batch][2][] = $data->potassium;
-                            $i++;
-                            $isFound = true;
-                            break;
-                        }
-                    }
-    
-                    if (!$isFound) {
+                    if ($n_data[$date . ':00'] ?? null && $p_data[$date . ':00'] ?? null && $k_data[$date . ':00'] ?? null) {
+                        $arr['batch' . $batch][0][] = $n_data[$date . ':00'];
+                        $arr['batch' . $batch][1][] = $p_data[$date . ':00'];
+                        $arr['batch' . $batch][2][] = $k_data[$date . ':00'];
+                    } else {
                         $arr['batch' . $batch][0][] = 0;
                         $arr['batch' . $batch][1][] = 0;
+                        $arr['batch' . $batch][2][] = 0;
                     }
                 }
-    
             }
 
             // return $this->sendResponse(NPKSensorResource::collection($datas), 'Datas retrieved successfully.');
