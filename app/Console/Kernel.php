@@ -20,11 +20,11 @@ class Kernel extends ConsoleKernel
         
         $date = Carbon::now()->format('Y-m-d');
         
-        // $schedule
-        //     ->command('command:seed_data')
-        //     ->hourly();
-        //     // ->appendOutputTo(storage_path('logs/seed-' . $date . '.log'))
-        //     // ->withoutOverlapping();
+        $schedule
+            ->command('command:seed_data')
+            ->hourly()
+            ->appendOutputTo(storage_path('logs/seed-' . $date . '.log'))
+            ->withoutOverlapping();
 
         $schedule
             ->command('command:check_batch_status')
