@@ -29,7 +29,8 @@ return [
         'api/v1/sgp30sensor',
         'api/v1/nodes',
         'api/v1/nodes/*',
-        'api/v1/upload-data'
+        'api/v1/upload-data',
+        'api/v1/refresh-data'
     ],
 
     'allowed_methods' => ['GET, POST, PUT, DELETE'],
