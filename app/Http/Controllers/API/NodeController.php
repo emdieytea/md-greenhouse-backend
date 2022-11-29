@@ -199,7 +199,7 @@ class NodeController extends BaseController
                     if ($response->status() == 200) {
                         $arr[] = $node->name . "'s data has been uploaded successfully.";
                     } else {
-                        $arr[] = $node->name . "'s data failed to uploaded.";
+                        $arr[] = $node->name . "'s data failed to upload.";
                     }
                 }
             }
