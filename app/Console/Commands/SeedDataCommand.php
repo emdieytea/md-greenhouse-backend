@@ -26,7 +26,9 @@ class SeedDataCommand extends Command
      */
     protected $description = 'Seeds data for the batches.';
 
-    private $_increment;
+    private $_increment_dht11;
+    private $_increment_sgp30;
+    private $_increment_npk;
 
     /**
      * Create a new command instance.
@@ -37,7 +39,9 @@ class SeedDataCommand extends Command
     {
         parent::__construct();
         
-        $this->_increment = 1.3; // increment value of the min and max value
+        $this->_increment_dht11 = 1.3; // increment value of the min and max value of dht11
+        $this->_increment_sgp30 = 2; // increment value of the min and max value of sgp30
+        $this->_increment_npk = 3; // increment value of the min and max value of npk
     }
 
     /**
@@ -78,14 +82,14 @@ class SeedDataCommand extends Command
             
             // assign the old data to defined variable if it has data
             if ($old_data) {
-                $def_temp = rand($old_data->temperature - $this->_increment, $old_data->temperature + $this->_increment);
-                $def_humid = rand($old_data->humidity - $this->_increment, $old_data->humidity + $this->_increment);
+                $def_temp = rand($old_data->temperature - $this->_increment_dht11, $old_data->temperature + $this->_increment_dht11);
+                $def_humid = rand($old_data->humidity - $this->_increment_dht11, $old_data->humidity + $this->_increment_dht11);
                 
                 while ($def_temp < $temp_min || $def_temp > $temp_max)
-                    $def_temp = rand($old_data->temperature - $this->_increment, $old_data->temperature + $this->_increment);
+                    $def_temp = rand($old_data->temperature - $this->_increment_dht11, $old_data->temperature + $this->_increment_dht11);
 
                 while ($def_humid < $humid_min || $def_humid > $humid_max)
-                    $def_humid = rand($old_data->humidity - $this->_increment, $old_data->humidity + $this->_increment);
+                    $def_humid = rand($old_data->humidity - $this->_increment_dht11, $old_data->humidity + $this->_increment_dht11);
             }
 
             // insert the data
@@ -134,14 +138,14 @@ class SeedDataCommand extends Command
             
             // assign the old data to defined variable if it has data
             if ($old_data) {
-                $def_co2 = rand($old_data->co2 - $this->_increment, $old_data->co2 + $this->_increment);
-                $def_tvoc = rand($old_data->tvoc - $this->_increment, $old_data->tvoc + $this->_increment);
+                $def_co2 = rand($old_data->co2 - $this->_increment_sgp30, $old_data->co2 + $this->_increment_sgp30);
+                $def_tvoc = rand($old_data->tvoc - $this->_increment_sgp30, $old_data->tvoc + $this->_increment_sgp30);
                 
                 while ($def_co2 < $co2_min || $def_co2 > $co2_max)
-                    $def_co2 = rand($old_data->co2 - $this->_increment, $old_data->co2 + $this->_increment);
+                    $def_co2 = rand($old_data->co2 - $this->_increment_sgp30, $old_data->co2 + $this->_increment_sgp30);
 
                 while ($def_tvoc < $tvoc_min || $def_tvoc > $tvoc_max)
-                    $def_tvoc = rand($old_data->tvoc - $this->_increment, $old_data->tvoc + $this->_increment);
+                    $def_tvoc = rand($old_data->tvoc - $this->_increment_sgp30, $old_data->tvoc + $this->_increment_sgp30);
             }
 
             // insert the data
@@ -195,18 +199,18 @@ class SeedDataCommand extends Command
             
             // assign the old data to defined variable if it has data
             if ($old_data) {
-                $def_n = rand($old_data->nitrogen - $this->_increment, $old_data->nitrogen + $this->_increment);
-                $def_p = rand($old_data->phosphorus - $this->_increment, $old_data->phosphorus + $this->_increment);
-                $def_k = rand($old_data->potassium - $this->_increment, $old_data->potassium + $this->_increment);
+                $def_n = rand($old_data->nitrogen - $this->_increment_npk, $old_data->nitrogen + $this->_increment_npk);
+                $def_p = rand($old_data->phosphorus - $this->_increment_npk, $old_data->phosphorus + $this->_increment_npk);
+                $def_k = rand($old_data->potassium - $this->_increment_npk, $old_data->potassium + $this->_increment_npk);
 
                 while ($def_n < $n_min || $def_n > $n_max)
-                    $def_n = rand($old_data->nitrogen - $this->_increment, $old_data->nitrogen + $this->_increment);
+                    $def_n = rand($old_data->nitrogen - $this->_increment_npk, $old_data->nitrogen + $this->_increment_npk);
 
                 while ($def_p < $p_min || $def_p > $p_max)
-                    $def_p = rand($old_data->phosphorus - $this->_increment, $old_data->phosphorus + $this->_increment);
+                    $def_p = rand($old_data->phosphorus - $this->_increment_npk, $old_data->phosphorus + $this->_increment_npk);
                     
                 while ($def_k < $k_min || $def_k > $k_max)
-                    $def_k = rand($old_data->potassium - $this->_increment, $old_data->potassium + $this->_increment);
+                    $def_k = rand($old_data->potassium - $this->_increment_npk, $old_data->potassium + $this->_increment_npk);
             }
 
             // insert the data
