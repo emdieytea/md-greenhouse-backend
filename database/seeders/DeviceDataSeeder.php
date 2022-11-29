@@ -19,8 +19,8 @@ class DeviceDataSeeder extends Seeder
     public function __construct()
     {
         $this->_date_now  = Carbon::now();
-        $this->_start_date = Carbon::parse('2022-03-01 10:04:01');
-        // $this->_end_date = Carbon::parse('2022-03-02 00:04:33');
+        $this->_start_date = Carbon::parse(env('APP_DATA_START_DATE', '2022-03-01 10:04:01'));
+        // $this->_end_date = Carbon::parse(env('APP_DATA_END_DATE', '2022-03-02 10:04:01'));
         $this->_increment = 1.3; // increment value of the min and max value
     }
 
