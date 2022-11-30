@@ -11,18 +11,16 @@ use Illuminate\Support\Facades\DB;
 
 class DeviceDataSeeder extends Seeder
 {
-    private $_date_now;
     private $_start_date;
-    // private $_end_date;
+    private $_end_date;
     private $_increment_dht11;
     private $_increment_sgp30;
     private $_increment_npk;
 
     public function __construct()
     {
-        $this->_date_now  = Carbon::now();
         $this->_start_date = Carbon::parse(env('APP_DATA_START_DATE', '2022-03-01 10:04:01'));
-        // $this->_end_date = Carbon::parse(env('APP_DATA_END_DATE', '2022-03-02 10:04:01'));
+        $this->_end_date = Carbon::parse(env('APP_DATA_END_DATE', Carbon::now()));
         $this->_increment_dht11 = 1.3; // increment value of the min and max value of dht11
         $this->_increment_sgp30 = 2; // increment value of the min and max value of sgp30
         $this->_increment_npk = 3; // increment value of the min and max value of npk
@@ -235,7 +233,7 @@ class DeviceDataSeeder extends Seeder
         $sgp30_counter = 0;
         $npk_counter = 0;
 
-        while ($this->_start_date->timestamp < $this->_date_now->timestamp) {
+        while ($this->_start_date->timestamp < $this->_end_date->timestamp) {
             $batches = explode(',', env('APP_ACTIVE_BATCHES')); // get the batches from env and convert them to array
             shuffle($batches); // shuffle the array batch
 
@@ -252,7 +250,7 @@ class DeviceDataSeeder extends Seeder
             $this->_start_date->addHour();
         }
         
-        $elapsed_time = Carbon::now()->diffInSeconds($this->_date_now);
+        $elapsed_time = Carbon::now()->diffInSeconds($this->_end_date);
 
         // format the numbers to add thousand separator (,)
         $dht11_counter = number_format($dht11_counter);
